@@ -2,3 +2,5 @@
 .env.example
 secrets/
 node_modules/
+server/secrets/
+server/__pycache__
