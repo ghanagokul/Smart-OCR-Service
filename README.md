@@ -48,18 +48,6 @@ docker compose up --build
 
 Backend services and workers will start automatically.
 
-### 4. Run frontend (optional – dev mode)
-
-```bash
-cd client
-npm install
-npm run dev
-```
-
-Frontend: `http://localhost:5173`
-
----
-
 ## API Endpoints
 
 * `POST /api/upload` – Upload document
