@@ -58,14 +58,6 @@ Backend services and workers will start automatically.
 
 ---
 
-## Security Notes
-
-* Secrets are managed via environment variables
-* `.gitignore` prevents committing credentials
-* GitHub push protection enabled
-
----
-
 ## Author
 
 **Ghana Gokul Gabburi**
