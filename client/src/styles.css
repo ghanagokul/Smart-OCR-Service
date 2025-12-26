@@ -1,133 +1,342 @@
+/* =======================================================================
+   GLOBAL THEME
+======================================================================= */
 :root {
-  --bg: #0b1020;
-  --card: #121835;
-  --muted: #99a3ff;
-  --fg: #fff;
-  --ok: #40d29b;
-  --warn: #f5c451;
-  --err: #ff6a6a;
-}
-
-* {
-  box-sizing: border-box;
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --bg: #0d1117;
+  --card: #161b22;
+  --border: #2c2f3a;
+  --text: #ffffff;
+  --text-muted: #9ca3af;
+  --accent: #4f46e5;
+  --accent-hover: #6366f1;
+  --radius: 8px;
 }
 
 body {
   margin: 0;
+  padding: 20px;
   background: var(--bg);
-  color: var(--fg);
+  color: var(--text);
+  font-family: Inter, system-ui, sans-serif;
 }
 
 .container {
   max-width: 1000px;
-  margin: 40px auto;
-  padding: 0 16px;
+  margin: auto;
+  padding-right: 420px; /* reserve space for chat sidebar */
 }
 
-header h1 {
-  margin: 0 0 8px;
-  font-size: 28px;
-}
-
-header p {
-  margin: 0 0 24px;
-  color: var(--muted);
-}
-
-.card {
+/* =======================================================================
+   UPLOAD AREA
+======================================================================= */
+.upload-area {
   background: var(--card);
-  border-radius: 16px;
-  padding: 16px;
-  margin: 12px 0;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-}
-
-.row {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.row.space {
-  justify-content: space-between;
-}
-
-button {
-  background: linear-gradient(180deg, #4b61ff, #3247ff);
-  color: #fff;
-  border: none;
-  padding: 10px 14px;
-  border-radius: 12px;
-  cursor: pointer;
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-input[type="file"] {
-  padding: 8px;
-  background: #0e142b;
-  border: 1px solid #26306b;
-  border-radius: 12px;
-  color: #c9d0ff;
-}
-
-.empty {
-  color: var(--muted);
+  border: 1px dashed var(--border);
+  padding: 22px;
+  border-radius: var(--radius);
   text-align: center;
-  padding: 40px 0;
+  margin-bottom: 25px;
+  cursor: pointer;
+  transition: border-color 0.25s ease;
 }
 
-.status.completed {
-  color: var(--ok);
+.upload-area:hover {
+  border-color: var(--accent);
 }
 
-.status.failed {
-  color: var(--err);
-}
-
-.progress {
-  position: relative;
-  height: 14px;
-  background: #0e142b;
-  border-radius: 999px;
-  overflow: hidden;
-  border: 1px solid #26306b;
-  margin-top: 10px;
-}
-
-.progress .bar {
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 0;
-  background: linear-gradient(90deg, #41d1ff, #7f7bff);
-  transition: width 0.4s ease;
-}
-
-.progress .label {
-  display: block;
-  margin-top: 8px;
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.result {
-  margin-top: 16px;
-}
-
-.code {
-  white-space: pre-wrap;
-  background: #0a0f22;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid #26306b;
-  max-height: 300px;
-  overflow: auto;
+.upload-area.disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .error {
-  color: var(--err);
+  color: #ff6a6a;
+  margin-top: 10px;
+}
+
+/* =======================================================================
+   SEARCH BAR
+======================================================================= */
+.search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.search-bar button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: white;
+  cursor: pointer;
+}
+
+.search-bar button:hover {
+  background: var(--accent-hover);
+}
+
+/* =======================================================================
+   SEARCH RESULTS
+======================================================================= */
+.results-grid {
+  margin-top: 10px;
+}
+
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 14px 18px;
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+}
+
+.result-title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.tag {
+  background: #0a0f22;
+  border: 1px solid #26306b;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  color: #99a3ff;
+}
+
+.result-btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: white;
+  cursor: pointer;
+}
+
+.result-btn:hover {
+  background: var(--accent-hover);
+}
+
+/* =======================================================================
+   JOB LIST + PROGRESS
+======================================================================= */
+.job-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 16px;
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+}
+
+.job-status {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.job-status.COMPLETED {
+  color: #40d29b;
+}
+
+.job-status.PROCESSING,
+.job-status.QUEUED,
+.job-status.EXTRACTING,
+.job-status.INDEXING {
+  color: #f5c451;
+}
+
+.job-status.FAILED {
+  color: #ff6a6a;
+}
+
+.progress-bar {
+  margin-top: 8px;
+}
+
+.progress-track {
+  width: 100%;
+  height: 7px;
+  background: #1c2230;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.progress-fill {
+  background: var(--accent);
+  height: 100%;
+}
+
+.progress-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* =======================================================================
+   CHAT SIDEBAR (SINGLE SOURCE)
+======================================================================= */
+.chat-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 420px;
+  height: 100vh;
+
+  background: #0d1117;
+  border-left: 1px solid var(--border);
+  padding: 16px;
+
+  display: flex;
+  flex-direction: column;
+
+  z-index: 9999;
+}
+
+.chat-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.chat-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.chat-message {
+  background: #1f2937;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+}
+
+.chat-message.user {
+  background: #4f46e5;
+  color: white;
+  align-self: flex-end;
+}
+
+.chat-message-role {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-bottom: 4px;
+}
+
+.chat-input-row {
+  display: flex;
+  gap: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.chat-input-row input {
+  flex: 1;
+  padding: 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: #111827;
+  color: white;
+}
+
+.chat-input-row button {
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.chat-input-row button:hover {
+  background: var(--accent-hover);
+}
+
+/* =======================================================================
+   EMPTY STATE
+======================================================================= */
+.empty {
+  text-align: center;
+  color: var(--text-muted);
+  margin-top: 20px;
+}
+
+/* =======================================================================
+   SEARCH RESULTS – LAYOUT HELPERS
+======================================================================= */
+.result-tags {
+  margin-top: 6px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.result-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* =======================================================================
+   DOCUMENT VIEWER (PDF OVERLAY)
+======================================================================= */
+.pdf-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 10000;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.pdf-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+
+  padding: 8px 14px;
+  font-size: 14px;
+
+  background: #ffffff;
+  color: #000000;
+
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+
+  z-index: 10001;
+}
+
+.pdf-close:hover {
+  background: #e5e7eb;
+}
+
+.pdf-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
 }

@@ -1,8 +1,44 @@
 version: "3.9"
 
 services:
+  # --------------------------
+  # Redis (Job Status / Broker)
+  # --------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  # --------------------------
+  # Qdrant Vector DB
+  # --------------------------
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 10s bash -c ':> /dev/tcp/127.0.0.1/6333' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+      start_period: 20s
+
+  # --------------------------
+  # PostgreSQL (Metadata)
+  # --------------------------
   db:
-    image: postgres:16-alpine
+    image: postgres:15-alpine
+    container_name: metadata-db
     environment:
       POSTGRES_USER: ocr
       POSTGRES_PASSWORD: ocr
@@ -11,34 +47,48 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ocr -d ocr"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
 
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-
+  # --------------------------
+  # Flask API
+  # --------------------------
   api:
     build: ./server
+    container_name: ocr-api
     command: ["/bin/bash", "/app/entrypoint.sh"]
     ports:
       - "8080:8080"
     env_file: .env
     environment:
       REDIS_URL: ${REDIS_URL}
+      QDRANT_URL: ${QDRANT_URL}
+      QDRANT_COLLECTION: ${QDRANT_COLLECTION}
       GCS_BUCKET: ${GCS_BUCKET}
       GCP_PROJECT_ID: ${GCP_PROJECT_ID}
-      GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
+      GOOGLE_APPLICATION_CREDENTIALS: /secrets/gcp-sa.json
       CORS_ORIGINS: ${CORS_ORIGINS}
-      DB_URL: ${DB_URL} # ✅ Pass DB connection string
+      DB_URL: ${DB_URL}
     volumes:
       - ./server:/app
       - ./secrets:/secrets:ro
     depends_on:
-      - redis
-      - db # ✅ Wait for Postgres
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+      db:
+        condition: service_healthy
 
+  # --------------------------
+  # Celery Worker
+  # --------------------------
   worker:
     build: ./server
+    container_name: ocr-worker
     command:
       [
         "celery",
@@ -47,30 +97,45 @@ services:
         "worker",
         "--loglevel=INFO",
         "-Q",
-        "ocr",
+        "ocr"
       ]
     env_file: .env
     environment:
       REDIS_URL: ${REDIS_URL}
+      QDRANT_URL: ${QDRANT_URL}
+      QDRANT_COLLECTION: ${QDRANT_COLLECTION}
       GCS_BUCKET: ${GCS_BUCKET}
       GCP_PROJECT_ID: ${GCP_PROJECT_ID}
-      GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
-      DB_URL: ${DB_URL} # ✅ Worker also needs DB access
+      GOOGLE_APPLICATION_CREDENTIALS: /secrets/gcp-sa.json
+      DB_URL: ${DB_URL}
     volumes:
       - ./server:/app
       - ./secrets:/secrets:ro
     depends_on:
-      - redis
-      - db
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+      db:
+        condition: service_healthy
 
+  # --------------------------
+  # Frontend (React + NGINX)
+  # --------------------------
   web:
     build: ./client
+    container_name: ocr-frontend
     ports:
-      - "5173:80"
+      - "3000:80"
     environment:
-      VITE_API_BASE: http://localhost:8080
+      # IMPORTANT: use service name, not localhost
+      VITE_API_BASE: http://api:8080
     depends_on:
       - api
 
+# --------------------------
+# Storage Volumes
+# --------------------------
 volumes:
   pgdata:
+  qdrant_storage:

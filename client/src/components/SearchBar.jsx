@@ -1,19 +1,28 @@
-import React, { useState } from 'react'
+import { useState } from "react";
 
 export default function SearchBar({ onSearch }) {
-  const [q, setQ] = useState('')
+  const [q, setQ] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const query = q.trim();
+    if (!query) return;
+    onSearch(query);
+  };
+
   return (
-    <div className="card">
-      <div className="row">
-        <input
-          type="text"
-          placeholder="Search by keywords, tags, text…"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          style={{ flex: 1, padding: 10, borderRadius: 12, border: '1px solid #26306b', background:'#0e142b', color:'#c9d0ff' }}
-        />
-        <button onClick={() => onSearch(q)}>Search</button>
-      </div>
-    </div>
-  )
+    <form className="search-bar" onSubmit={handleSubmit} role="search">
+      <input
+        type="text"
+        placeholder="Search documents…"
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        aria-label="Search documents"
+      />
+
+      <button type="submit" disabled={!q.trim()}>
+        Search
+      </button>
+    </form>
+  );
 }

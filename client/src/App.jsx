@@ -1,61 +1,73 @@
-import React, { useEffect, useState } from 'react'
-import UploadArea from './components/UploadArea'
-import JobCard from './components/JobCard'
-import SearchBar from './components/SearchBar'
-import SearchResults from './components/SearchResults'
-import { getStatus, searchDocs, getDownloadUrl } from './api'
+import UploadArea from "./components/UploadArea";
+import JobCard from "./components/JobCard";
+import SearchBar from "./components/SearchBar";
+import SearchResults from "./components/SearchResults";
+import ChatPanel from "./components/ChatPanel";
+
+import { useJobs } from "./state/useJobs";
+import { useSearch } from "./state/useSearch";
+import { useChat } from "./state/useChat";
 
 export default function App() {
-  const [jobs, setJobs] = useState(() => {
-    const saved = localStorage.getItem('jobs')
-    return saved ? JSON.parse(saved) : []
-  })
-  const [results, setResults] = useState([])
+  /* -------------------- Jobs (OCR lifecycle) -------------------- */
+  const { jobs, addJob } = useJobs();
 
-  useEffect(() => { localStorage.setItem('jobs', JSON.stringify(jobs)) }, [jobs])
+  /* -------------------- Search -------------------- */
+  const { results, searching, handleSearch } = useSearch();
 
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      const updated = await Promise.all(jobs.map(async j => {
-        if (['COMPLETED','FAILED'].includes(j.status)) return j
-        const s = await getStatus(j.id).catch(() => null)
-        return s ? {...j, ...s} : j
-      }))
-      setJobs(updated)
-    }, 1500)
-    return () => clearInterval(interval)
-  }, [jobs])
-
-  const handleSearch = async (q) => {
-    const items = await searchDocs(q)
-    setResults(items)
-  }
-
-  const handleDownload = async (id) => {
-    try {
-      const url = await getDownloadUrl(id)
-      window.location.href = url
-    } catch {
-      alert('Download not available yet.')
-    }
-  }
+  /* -------------------- Chat (Document QA) -------------------- */
+  const {
+    selectedDoc,
+    chatMessages,
+    chatInput,
+    chatLoading,
+    setChatInput,
+    openChatForDoc,
+    closeChat,
+    sendQuestion,
+  } = useChat();
 
   return (
     <div className="container">
+      {/* -------------------- Header -------------------- */}
       <header>
         <h1>Smart OCR & Tagging</h1>
-        <p>Upload, extract, tag, search and download your documents.</p>
+        <p>
+          Upload documents, search them, download results, and chat with content.
+        </p>
       </header>
 
-      <UploadArea onNewJob={(job) => setJobs([job, ...jobs])} />
+      {/* -------------------- Upload -------------------- */}
+      <UploadArea onNewJob={addJob} />
 
+      {/* -------------------- Search -------------------- */}
       <SearchBar onSearch={handleSearch} />
-      <SearchResults items={results} onDownload={handleDownload} />
 
+      <SearchResults
+        items={results}
+        searching={searching}
+        onSelect={openChatForDoc}
+      />
+
+      {/* -------------------- OCR Jobs -------------------- */}
       <section className="jobs">
-        {jobs.length === 0 && <p className="empty">No jobs yet. Upload a file to begin.</p>}
-        {jobs.map(job => <JobCard key={job.id} job={job} />)}
+        {jobs.map((job) => (
+          <JobCard key={job.id} job={job} />
+        ))}
       </section>
+
+      {/* -------------------- Chat Panel -------------------- */}
+      {selectedDoc && (
+        <ChatPanel
+          selectedDoc={selectedDoc}
+          chatMessages={chatMessages}
+          chatInput={chatInput}
+          chatLoading={chatLoading}
+          setChatInput={setChatInput}
+          handleSendQuestion={sendQuestion}
+          onClose={closeChat}
+        />
+      )}
     </div>
-  )
+  );
 }

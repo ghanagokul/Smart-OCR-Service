@@ -21,14 +21,24 @@ class StatusStore:
             "created_at": int(time.time()),
         }
         self.r.hset(STATUS_PREFIX + job_id, mapping=data)
+        # Optional: expire after 24h
+        # self.r.expire(STATUS_PREFIX + job_id, 86400)
         return job_id
 
     def update(self, job_id: str, **fields):
+        # Ensure progress never decreases
         if "progress" in fields:
-            # keep progress monotonic
-            current = self.get(job_id).get("progress", 0)
-            fields["progress"] = max(int(fields["progress"]), int(current))
-        self.r.hset(STATUS_PREFIX + job_id, mapping={k: str(v) for k, v in fields.items()})
+            current = int(self.get(job_id).get("progress", 0) or 0)
+            fields["progress"] = max(int(fields["progress"]), current)
+
+        # Auto-set completion timestamp
+        if fields.get("status") == "COMPLETED":
+            fields["completed_at"] = int(time.time())
+
+        self.r.hset(
+            STATUS_PREFIX + job_id,
+            mapping={k: str(v) for k, v in fields.items()}
+        )
 
     def get(self, job_id: str) -> dict:
         raw = self.r.hgetall(STATUS_PREFIX + job_id)

@@ -1,6 +1,95 @@
+####################################
+# ENV / SECRETS (CRITICAL)
+####################################
 .env
-.env.example
+.env.*
+!*.example
 secrets/
-node_modules/
 server/secrets/
-server/__pycache__
+
+*.pem
+*.key
+*.crt
+
+####################################
+# PYTHON (SERVER)
+####################################
+__pycache__/
+server/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+env/
+
+####################################
+# NODE / FRONTEND (CLIENT)
+####################################
+node_modules/
+client/node_modules/
+
+dist/
+build/
+.vite/
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+####################################
+# DOCKER / COMPOSE
+####################################
+docker-compose.override.yml
+*.pid
+
+####################################
+# DATABASE / LOCAL DATA
+####################################
+*.db
+*.sqlite
+*.sqlite3
+
+####################################
+# UPLOADS / GENERATED FILES
+####################################
+uploads/
+processed/
+tmp/
+cache/
+
+####################################
+# OCR / ML / VECTOR ARTIFACTS
+####################################
+embeddings/
+vectors/
+faiss/
+qdrant_data/
+
+####################################
+# LOCAL FILES / TEST DATA
+####################################
+*.pdf
+*.txt
+test.*
+sample.*
+
+####################################
+# IDE / EDITOR
+####################################
+.vscode/
+.idea/
+*.swp
+*.swo
+
+####################################
+# OS FILES
+####################################
+.DS_Store
+Thumbs.db
+*.out

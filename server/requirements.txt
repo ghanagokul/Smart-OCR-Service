@@ -1,15 +1,22 @@
 Flask==3.0.3
 Flask-Cors==4.0.1
 gunicorn==22.0.0
+
 celery==5.4.0
 redis==5.0.8
+
 pytesseract==0.3.10
 Pillow==10.4.0
 pdf2image==1.17.0
+
 spacy==3.7.5
-# pre-install the small model at build time
 https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
+
 google-cloud-storage==2.17.0
 python-dotenv==1.0.1
+
 SQLAlchemy==2.0.35
 psycopg2-binary==2.9.9
+
+openai>=1.12.0
+qdrant-client==1.9.0

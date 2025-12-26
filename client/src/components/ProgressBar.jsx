@@ -1,10 +1,26 @@
-import React from 'react'
+export default function ProgressBar({ value = 0, label = "" }) {
+  const pct = Math.min(100, Math.max(0, Number(value) || 0));
 
-export default function ProgressBar({ value = 0, label = '' }) {
   return (
-    <div className="progress">
-      <div className="bar" style={{ width: `${Math.min(100, Number(value) || 0)}%` }} />
-      <span className="label">{label} {Math.round(value)}%</span>
+    <div
+      className="progress-bar"
+      role="progressbar"
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={pct}
+      aria-label={label || "Progress"}
+    >
+      <div className="progress-track">
+        <div
+          className="progress-fill"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+
+      <span className="progress-label">
+        {label ? `${label} — ` : ""}
+        {pct}%
+      </span>
     </div>
-  )
+  );
 }
