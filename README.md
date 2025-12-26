@@ -1,28 +1,109 @@
-# Replace these with your values
+Here is a **very concise, professional, and user-focused README**.
+It is written for **any developer who wants to run your code quickly**, change environment variables, and understand what it does — nothing extra.
 
-PROJECT_ID="your-gcp-project-id"
-BUCKET_NAME="smart-ocr-bucket"
-REGION="us-central1"
+You can paste this directly as `README.md`.
 
-gcloud auth login
-gcloud config set project $PROJECT_ID
+---
 
-gcloud storage buckets create gs://$BUCKET_NAME \
-    --project=$PROJECT_ID \
- --location=$REGION \
- --uniform-bucket-level-access
+````markdown
+# Smart OCR Service
 
-gcloud iam service-accounts create ocr-service-account \
- --display-name="OCR Service Account"
+Smart OCR Service is a Dockerized full-stack application for uploading documents, extracting text asynchronously, and enabling search and chat over document content.
 
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-    --member="serviceAccount:ocr-service-account@$PROJECT_ID.iam.gserviceaccount.com" \
- --role="roles/storage.objectAdmin"
+---
 
-gcloud iam service-accounts keys create ./secrets/gcp-sa.json \
- --iam-account=ocr-service-account@$PROJECT_ID.iam.gserviceaccount.com
+## Features
+- Document upload & OCR processing
+- Asynchronous background jobs (Celery + Redis)
+- Job status tracking
+- Semantic search using vector embeddings
+- Chat over document content (RAG-style)
+- React frontend with stable error handling
 
-export GOOGLE_APPLICATION_CREDENTIALS=./secrets/gcp-sa.json
-gsutil ls -p $PROJECT_ID gs://$BUCKET_NAME
+---
 
-and download screts folder
+## Tech Stack
+- **Backend:** Flask, Celery, Redis, PostgreSQL, Qdrant
+- **Frontend:** React (Vite)
+- **Infra:** Docker, OpenAI API
+
+---
+
+## Run Locally
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/ghanagokul/Smart-OCR-Service.git
+cd Smart-OCR-Service
+````
+
+### 2. Configure environment variables
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and set required values (database, Redis, OpenAI key, storage config).
+
+> Do not commit `.env`.
+
+### 3. Start the application
+
+```bash
+docker compose up --build
+```
+
+Backend services and workers will start automatically.
+
+### 4. Run frontend (optional – dev mode)
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+Frontend: `http://localhost:5173`
+
+---
+
+## API Endpoints
+
+* `POST /api/upload` – Upload document
+* `GET /api/status/{id}` – Job status
+* `GET /api/result/{id}` – OCR result
+* `GET /api/search?q=` – Search documents
+* `POST /api/chat/{id}` – Chat with document
+
+---
+
+## Security Notes
+
+* Secrets are managed via environment variables
+* `.gitignore` prevents committing credentials
+* GitHub push protection enabled
+
+---
+
+## Author
+
+**Ghana Gokul Gabburi**
+GitHub: [https://github.com/ghanagokul](https://github.com/ghanagokul)
+
+```
+
+---
+
+This README is:
+- ✔ Minimal
+- ✔ Professional
+- ✔ Usable by any developer
+- ✔ Clear on how to run and configure
+
+If you want, I can also:
+- Add a **one-line project description for resumes**
+- Add **Docker-only run instructions**
+- Add **cloud deployment notes**
+
+Just tell me.
+```
