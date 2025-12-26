@@ -1,11 +1,4 @@
-Here is a **very concise, professional, and user-focused README**.
-It is written for **any developer who wants to run your code quickly**, change environment variables, and understand what it does — nothing extra.
 
-You can paste this directly as `README.md`.
-
----
-
-````markdown
 # Smart OCR Service
 
 Smart OCR Service is a Dockerized full-stack application for uploading documents, extracting text asynchronously, and enabling search and chat over document content.
@@ -90,20 +83,4 @@ Frontend: `http://localhost:5173`
 **Ghana Gokul Gabburi**
 GitHub: [https://github.com/ghanagokul](https://github.com/ghanagokul)
 
-```
 
----
-
-This README is:
-- ✔ Minimal
-- ✔ Professional
-- ✔ Usable by any developer
-- ✔ Clear on how to run and configure
-
-If you want, I can also:
-- Add a **one-line project description for resumes**
-- Add **Docker-only run instructions**
-- Add **cloud deployment notes**
-
-Just tell me.
-```
