@@ -1,7 +1,6 @@
-
 # Smart OCR Service
 
-Smart OCR Service is a Dockerized full-stack application for uploading documents, extracting text asynchronously, and enabling search and chat over document content.
+Smart OCR Service is an intelligent document management platform—similar to Google Docs—that turns static files (like scanned PDFs, receipts, or images) into interactive digital knowledge. Unlike traditional folders that only let you search by a file's title, this system reads the actual text inside your documents using **OCR (Optical Character Recognition)**. It then uses **NLP (Natural Language Processing)** to understand the deeper meaning of your files. This means you can search your library based on concepts and context, and even open up an integrated AI chatbot to ask questions and have a conversation directly with a document without ever needing to download it.
 
 ---
 
@@ -22,32 +21,6 @@ Smart OCR Service is a Dockerized full-stack application for uploading documents
 
 ---
 
-## Run Locally
-
-### 1. Clone the repository
-```bash
-git clone https://github.com/ghanagokul/Smart-OCR-Service.git
-cd Smart-OCR-Service
-````
-
-### 2. Configure environment variables
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and set required values (database, Redis, OpenAI key, storage config).
-
-> Do not commit `.env`.
-
-### 3. Start the application
-
-```bash
-docker compose up --build
-```
-
-Backend services and workers will start automatically.
-
 ## API Endpoints
 
 * `POST /api/upload` – Upload document
@@ -55,12 +28,3 @@ Backend services and workers will start automatically.
 * `GET /api/result/{id}` – OCR result
 * `GET /api/search?q=` – Search documents
 * `POST /api/chat/{id}` – Chat with document
-
----
-
-## Author
-
-**Ghana Gokul Gabburi**
-GitHub: [https://github.com/ghanagokul](https://github.com/ghanagokul)
-
-
